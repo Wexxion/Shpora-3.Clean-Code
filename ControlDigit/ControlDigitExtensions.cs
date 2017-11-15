@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using NUnit.Framework;
 
 namespace ControlDigit
@@ -28,9 +30,37 @@ namespace ControlDigit
 
 		public static int ControlDigit2(this long number)
 		{
-			throw new NotImplementedException();
+		    var oddSum = number.GetDigitsInReversedOrder(odd:true).Sum();
+		    var evenSum = number.GetDigitsInReversedOrder(odd:false).Sum(num => 3 * num);
+		    var result = (oddSum + evenSum ) % 11;
+		    return result == 10 ? 1 : result;
 		}
-	}
+
+	    public static IEnumerable<int> GetDigitsInReversedOrder(this long number)
+	    {
+	        while (number > 0)
+	        {
+	            yield return number.GetLastDigit();
+	            number = number.DelLastDigit();
+	        }
+	    }
+	    public static IEnumerable<int> GetDigitsInReversedOrder(this long number, bool odd)
+	    {
+	        foreach (var digit in number.GetDigitsInReversedOrder())
+	        {
+	            if (odd)
+	            {
+	                yield return digit;
+	                odd = false;
+	            }
+	            else
+	                odd = true;
+            }
+	    }
+
+	    public static int GetLastDigit(this long number) => (int) number % 10;
+	    public static long DelLastDigit(this long number) => number / 10;
+    }
 
 	[TestFixture]
 	public class ControlDigitExtensions_Tests

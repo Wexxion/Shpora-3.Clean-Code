@@ -1,17 +1,21 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
 
 namespace Markdown
 {
 	public class Md
 	{
+	    private Dictionary<string, string> tags;
+	    private HTMLRenderer renderer;
+	    private MdAnalyzer analyzer;
+	    public Md(Dictionary<string, string> tags)
+	    {
+	        this.tags = tags;
+            renderer = new HTMLRenderer();
+            analyzer = new MdAnalyzer();
+	    }
 		public string RenderToHtml(string markdown)
 		{
-			return markdown; //TODO
+			return markdown; 
 		}
-	}
-
-	[TestFixture]
-	public class Md_ShouldRender
-	{
 	}
 }
