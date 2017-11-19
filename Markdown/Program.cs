@@ -30,9 +30,7 @@ namespace Markdown
                     break;
 		    }
 
-		    var tags = new Dictionary<string, string>(); //Тут можно будет добавлять поддержку новых тегов
-            //Можно будет делать не только словарем, но и методами а-ля md.add("md tag", "html tag")
-            var md = new Md(tags);
+            var md = new Md();
 		    var mdText = File.ReadAllText(input);
 		    var result = md.RenderToHtml(mdText);
 		    File.WriteAllText(output, result);

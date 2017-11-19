@@ -52,13 +52,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HTMLRenderer.cs" />
+    <Compile Include="HtmlRenderer.cs" />
+    <Compile Include="Lang\Realizations\TagContent.cs" />
     <Compile Include="Md.cs" />
-    <Compile Include="MdAnalyzer.cs" />
-    <Compile Include="Md_ShouldRender.cs" />
+    <Compile Include="Tests\Md_ShouldRender.cs" />
+    <Compile Include="Parser\Match.cs" />
+    <Compile Include="Parser\Mismatch.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Tag.cs" />
-    <Compile Include="TagType.cs" />
+    <Compile Include="Lang\Realizations\BoldTag.cs" />
+    <Compile Include="Lang\IToken.cs" />
+    <Compile Include="Lang\Realizations\CursiveTag.cs" />
+    <Compile Include="Lang\TagInfo.cs" />
+    <Compile Include="Parser\IMatchResult.cs" />
+    <Compile Include="Parser\Tokenizer.cs" />
+    <Compile Include="Tests\Tokenizer_Should.cs" />
+    <Compile Include="UsefulThings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

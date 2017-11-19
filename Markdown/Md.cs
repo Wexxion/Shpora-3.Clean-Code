@@ -1,21 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Markdown.Lang;
+using Markdown.Parser;
 
 namespace Markdown
 {
 	public class Md
 	{
-	    private Dictionary<string, string> tags;
-	    private HTMLRenderer renderer;
-	    private MdAnalyzer analyzer;
-	    public Md(Dictionary<string, string> tags)
+        private readonly Tokenizer tokenizer = new Tokenizer();
+        private readonly HtmlRenderer renderer = new HtmlRenderer();
+	    private Stack<IToken> stack;
+	    private Dictionary<string, Func<IToken>> tags;
+	    public Md()
 	    {
-	        this.tags = tags;
-            renderer = new HTMLRenderer();
-            analyzer = new MdAnalyzer();
+	        tags = GetAllTags();
+	        foreach (var tag in tags.Keys)
+	            tokenizer.Add(tag);
 	    }
-		public string RenderToHtml(string markdown)
+
+	    private Dictionary<string, Func<IToken>> GetAllTags()
+	    {
+	        return UsefulThings
+                .GetDefaultConstuctorsOf<IToken>()
+	            .ToDictionary(key => key().MarkInfo.Tag);
+	    }
+
+        public string RenderToHtml(string markdown)
 		{
-			return markdown; 
+		    var syntaxTree = new List<IToken>();
+
+            foreach (var matchResult in tokenizer.FindAll(markdown))
+		        syntaxTree.Add(GetNextToken(matchResult));
+
+		    return renderer.Render(syntaxTree);
 		}
+
+	    private IToken GetNextToken(IMatchResult result)
+	    {
+	        throw new NotImplementedException();
+	    }
 	}
 }
