@@ -1,45 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Markdown.Lang;
 using Markdown.Parser;
+using Markdown.SyntaxTree;
 
 namespace Markdown
 {
-	public class Md
-	{
-        private readonly Tokenizer tokenizer = new Tokenizer();
-        private readonly HtmlRenderer renderer = new HtmlRenderer();
-	    private Stack<IToken> stack;
-	    private Dictionary<string, Func<IToken>> tags;
-	    public Md()
-	    {
-	        tags = GetAllTags();
-	        foreach (var tag in tags.Keys)
-	            tokenizer.Add(tag);
-	    }
+    public class Md
+    {
+        private readonly Tokenizer tokenizer;
+        private readonly HtmlRenderer html;
+        private readonly SyntaxTreeBuilder builder;
 
-	    private Dictionary<string, Func<IToken>> GetAllTags()
-	    {
-	        return UsefulThings
+        public Md()
+        {
+            tokenizer = new Tokenizer();
+            html = new HtmlRenderer();
+
+            var tags = GetAllTags();
+            foreach (var tag in tags.Keys)
+                tokenizer.Add(tag);
+            tokenizer.Build();
+
+            builder = new SyntaxTreeBuilder(tags);
+        }
+
+        private Dictionary<string, Func<IToken>> GetAllTags()
+        {
+            return UsefulThings
                 .GetDefaultConstuctorsOf<IToken>()
-	            .ToDictionary(key => key().MarkInfo.Tag);
-	    }
+                .ToDictionary(key => key().MdTag);
+        }
 
         public string RenderToHtml(string markdown)
-		{
-		    var syntaxTree = new List<IToken>();
-
-            foreach (var matchResult in tokenizer.FindAll(markdown))
-		        syntaxTree.Add(GetNextToken(matchResult));
-
-		    return renderer.Render(syntaxTree);
-		}
-
-	    private IToken GetNextToken(IMatchResult result)
-	    {
-	        throw new NotImplementedException();
-	    }
-	}
+        {
+            foreach (var line in markdown.Split('\n'))
+            {
+                var newLine = true;
+                foreach (var matchResult in tokenizer.FindAll(line))
+                {
+                    builder.Append(matchResult);
+                    if (newLine)
+                    {
+                        builder.CloseNotPairedTags();
+                        newLine = false;
+                    }
+                }
+            }
+            return html.Render(builder.Tree);
+        }
+    }
 }

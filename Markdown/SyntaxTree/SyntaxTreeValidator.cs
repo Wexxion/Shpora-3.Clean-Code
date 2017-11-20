@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Markdown.Lang;
 
-namespace Markdown
+namespace Markdown.SyntaxTree
 {
-    class HtmlRenderer
+    class SyntaxTreeValidator
     {
-        public string Render(List<IToken> syntaxTree) => throw new NotImplementedException();
     }
 }

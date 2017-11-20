@@ -7,6 +7,8 @@ namespace Markdown
 {
     public static class UsefulThings
     {
+        public static string ConverToHtml(string htmlTag, string content) 
+            => $"<{htmlTag}>{content}</{htmlTag}>";
         public static bool IsCorrectIndex(this string str, int i) => i >= 0 && i < str.Length;
         public static bool HasDefaultConstructor(this Type t) => t.GetConstructor(Type.EmptyTypes) != null;
 

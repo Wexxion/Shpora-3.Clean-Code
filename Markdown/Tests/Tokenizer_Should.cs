@@ -25,6 +25,7 @@ namespace Markdown.Tests
         [TestCase("test _italic_", 4, ExpectedResult = new[] { "test ", "_", "italic", "_" })]
         [TestCase("__bold__", 3, ExpectedResult = new[] { "__", "bold", "__" })]
         [TestCase("__bold__ test", 4, ExpectedResult = new[] { "__", "bold", "__", " test" })]
+        [TestCase("__a_b_c__", 7, ExpectedResult = new[] { "__", "a", "_", "b", "_", "c", "__" })]
         
         public IEnumerable<string> CorrectlyReturnTokens_OnSimpleTests(string md, int count)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Markdown.Parser
 {
@@ -11,10 +12,12 @@ namespace Markdown.Parser
         public void Add(string word)
         {
             var node = root;
-            foreach (var c in word)
-                node = node[c] ?? (node[c] = new Node(c, node));
+            foreach (var letter in word)
+                node = node[letter] ?? (node[letter] = new Node(letter, node));
         }
 
+        public IEnumerable<IMatchResult> FindMatches(string text)
+            => FindAll(text).Where(result => result is Match);
         public IEnumerable<IMatchResult> FindAll(string text)
         {
             if (string.IsNullOrEmpty(text)) throw new ArgumentException();
@@ -33,27 +36,27 @@ namespace Markdown.Parser
                 {
                     mismatch = true;
                     endIndex = i + 1;
-                    if (i != text.Length - 1)
-                        continue;
                 }
 
                 if (mismatch)
                 {
-                    yield return new Mismatch(text.Substring(startIndex, endIndex - startIndex));
+                    if (i != text.Length - 1 && root[text[i + 1]] == null) continue;
                     mismatch = false;
+                    yield return new Mismatch(text.Substring(startIndex, endIndex - startIndex));
+                    
                 }
-                else if (text.IsCorrectIndex(i + 1) && node[text[i + 1]] == null || i == text.Length - 1)
+                else if (i == text.Length - 1 || !node.NextExists(text[i + 1]))
                 {
                     var prevIndex = i - node.Pattern.Length;
                     var nextIndex = i + 1;
-                    var prev = text.IsCorrectIndex(prevIndex) ? text[prevIndex] : (char?)null;
-                    var next = text.IsCorrectIndex(nextIndex) ? text[nextIndex] : (char?)null;
+                    var prev = text.IsCorrectIndex(prevIndex) ? text[prevIndex] : (char?) null;
+                    var next = text.IsCorrectIndex(nextIndex) ? text[nextIndex] : (char?) null;
                     yield return new Match(node.Pattern, prev, next);
                     startIndex = i + 1;
                 }
-                    
             }
         }
+
 
         public void Build()
         {
@@ -100,9 +103,7 @@ namespace Markdown.Parser
             public Node Fail { get; set; }
             public string Pattern { get; set; }
 
-            public Node()
-            {
-            }
+            public Node() {}
 
             public Node(char value, Node parent)
             {
@@ -110,11 +111,13 @@ namespace Markdown.Parser
                 Parent = parent;
             }
 
-            public Node this[char c]
+            public Node this[char letter]
             {
-                get => children.ContainsKey(c) ? children[c] : null;
-                set => children[c] = value;
+                get => children.ContainsKey(letter) ? children[letter] : null;
+                set => children[letter] = value;
             }
+
+            public bool NextExists(char symbol) => this[symbol] != null;
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
             public IEnumerator<Node> GetEnumerator() => children.Values.GetEnumerator();

@@ -52,17 +52,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HtmlRenderer.cs" />
-    <Compile Include="Lang\Realizations\TagContent.cs" />
+    <Compile Include="SyntaxTree\HtmlRenderer.cs" />
+    <Compile Include="Lang\TagContent.cs" />
     <Compile Include="Md.cs" />
+    <Compile Include="SyntaxTree\SyntaxTreeBuilder.cs" />
+    <Compile Include="SyntaxTree\SyntaxTreeValidator.cs" />
+    <Compile Include="SyntaxTree\Tree.cs" />
     <Compile Include="Tests\Md_ShouldRender.cs" />
     <Compile Include="Parser\Match.cs" />
     <Compile Include="Parser\Mismatch.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Lang\Realizations\BoldTag.cs" />
+    <Compile Include="Lang\BoldTag.cs" />
     <Compile Include="Lang\IToken.cs" />
-    <Compile Include="Lang\Realizations\CursiveTag.cs" />
-    <Compile Include="Lang\TagInfo.cs" />
+    <Compile Include="Lang\CursiveTag.cs" />
     <Compile Include="Parser\IMatchResult.cs" />
     <Compile Include="Parser\Tokenizer.cs" />
     <Compile Include="Tests\Tokenizer_Should.cs" />
