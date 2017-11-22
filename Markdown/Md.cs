@@ -48,6 +48,8 @@ namespace Markdown
                     }
                 }
             }
+            //builder без методв Build :) Дерево вполне себе результат билда
+            //лушче не просто builderом его назвать, а чуть более конкретно
             return html.Render(builder.Tree);
         }
     }

@@ -16,8 +16,11 @@ namespace Markdown.Parser
                 node = node[letter] ?? (node[letter] = new Node(letter, node));
         }
 
+        // метод не используется
         public IEnumerable<IMatchResult> FindMatches(string text)
             => FindAll(text).Where(result => result is Match);
+        
+        // FindAll в контексте Tokenizer, он что находит? Давай подберем название, отражающее суть. 
         public IEnumerable<IMatchResult> FindAll(string text)
         {
             if (string.IsNullOrEmpty(text)) throw new ArgumentException();

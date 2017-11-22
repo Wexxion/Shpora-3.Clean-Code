@@ -18,10 +18,13 @@ namespace Markdown.SyntaxTree
             return sb.ToString();
         }
 
-        public static void RecursiveEnumeration(IToken currenToken, StringBuilder sb)
+        //какой профит тут от stringBuilderа? В глубь рекурсии он не передается,
+        //аппендится только 1 раз (либо то, либо другое)
+        //можно же так же строку возвращать и ничего не изменится?
+        private static void RecursiveEnumeration(IToken currenToken, StringBuilder sb)
         {
-            if (currenToken is TagContent)
-                sb.Append(((TagContent)currenToken).Data);
+            if (currenToken is TagContent content)
+                sb.Append(content.Data);
             else
             {
                 var contentSb = new StringBuilder();

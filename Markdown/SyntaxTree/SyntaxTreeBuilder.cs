@@ -47,13 +47,17 @@ namespace Markdown.SyntaxTree
         {
             if (stack.Count == 0)
             {
+                //resharper - use pattern matching
                 if (matchResult is Match)
                     SetNewCurrentAndAddTag((Match)matchResult, nesting: false);
                 else
+                //по идее это же AppendContent для тега?
+                //все операции, кроме этой более-менее понятно названы (SetNewCurrentAndAddTag, но не придумал как понятнее сделать)
                     current.Add(new TagContent(matchResult.Data));
             }
             else
             {
+                //resharper - use pattern matching
                 if (matchResult is Match)
                 {   
                     if (stack.Peek().MdTag == matchResult.Data)
@@ -83,8 +87,14 @@ namespace Markdown.SyntaxTree
 
         private void SetNewCurrentAndAddTag(Match matchResult, bool nesting)
         {
+            //Очень дого пытался понять эту строчку :)
+            // Тут не очень понятный нейминг получился - общие названия, не дающие знания о сути (tags, Data)
+            // плюс хитрый механизм создания объектов.
+            // можно упростить, добавив конкретики в названия, а еще можно ПОДУМАТЬ над фабрикой, например.
             var tag = tags[matchResult.Data]();
             //TODO вынести проверку 
+            //все реализации метода тупо true возвращают
+            // я чего-то не понял или это не нужно?
             if (!tag.IsCorrectSurroundingsForOpeningTag(matchResult.PrevSymbol, matchResult.NextSymbol))
                 tag = new TagContent(matchResult.Data);
             if (nesting)
