@@ -11,8 +11,8 @@ namespace Markdown.SyntaxTree
         public Tree() { }
 
 
-        public Tree<TValue> Add(TValue value) => Add(new Tree<TValue>(value));
-        public Tree<TValue> Add(Tree<TValue> value)
+        public Tree<TValue> AppendContent(TValue value) => AppendContent(new Tree<TValue>(value));
+        public Tree<TValue> AppendContent(Tree<TValue> value)
         {
             value.Parent = this;
             Children.Add(value);

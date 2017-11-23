@@ -9,19 +9,24 @@ namespace Markdown.SyntaxTree
 {
     class SyntaxTreeBuilder
     {
-        public Tree<IToken> Tree => root;
-        private readonly Dictionary<string, Func<IToken>> tags;
-        private readonly Stack<IToken> stack = new Stack<IToken>();
-        private readonly Tree<IToken> root = new Tree<IToken>();
-        private readonly SyntaxTreeValidator validator;
+        private readonly TagsFactory tagsFactory;
+        private Stack<IToken> stack;
+        private Tree<IToken> root;
 
         private Tree<IToken> current;
 
-        public SyntaxTreeBuilder(Dictionary<string, Func<IToken>> tagsDictionary)
+        public SyntaxTreeBuilder(TagsFactory factory)
         {
-            tags = tagsDictionary;
+            tagsFactory = factory;
+            Clear();
+        }
+
+        public Tree<IToken> GetTree() => root;
+        public void Clear()
+        {
+            root = new Tree<IToken>();
+            stack = new Stack<IToken>();
             current = root;
-            validator = new SyntaxTreeValidator();
         }
 
         public void CloseNotPairedTags()
@@ -47,39 +52,35 @@ namespace Markdown.SyntaxTree
         {
             if (stack.Count == 0)
             {
-                //resharper - use pattern matching
-                if (matchResult is Match)
-                    SetNewCurrentAndAddTag((Match)matchResult, nesting: false);
+                if (matchResult is Match match)
+                    SetNewCurrentAndAddTag(match, nesting: false);
                 else
-                //по идее это же AppendContent для тега?
-                //все операции, кроме этой более-менее понятно названы (SetNewCurrentAndAddTag, но не придумал как понятнее сделать)
-                    current.Add(new TagContent(matchResult.Data));
+                    current.AppendContent(new TagContent(matchResult.Content));
             }
             else
             {
-                //resharper - use pattern matching
-                if (matchResult is Match)
+                if (matchResult is Match match)
                 {   
-                    if (stack.Peek().MdTag == matchResult.Data)
-                        CloseCurrentTag((Match)matchResult);
+                    if (stack.Peek().MdTag == matchResult.Content)
+                        CloseCurrentTag(match);
                     else
-                        SetNewCurrentAndAddTag((Match)matchResult, nesting: true);
+                        SetNewCurrentAndAddTag(match, nesting: true);
                 }
                 else
-                    current.Value.Content.Add(new TagContent(matchResult.Data));
+                    current.Value.Content.Add(new TagContent(matchResult.Content));
             }
         }
 
         private void CloseCurrentTag(Match matchResult)
         {
-            var tag = tags[matchResult.Data]();
+            var tag = tagsFactory.GetTagFromContent(matchResult.Content);
 
-            //TODO вынести проверку 
             if (!(tag.IsCorrectSurroundingsForClosingTag(matchResult.PrevSymbol, matchResult.NextSymbol)
                 && tag.IsCorrectNesting(current.Parent.Value)))
-                current.Add(new TagContent(matchResult.Data));
+                current.AppendContent(new TagContent(matchResult.Content));
             else
             {
+                current.Value.IsClosed = true;
                 current = current.Parent;
                 stack.Pop();
             }
@@ -87,35 +88,29 @@ namespace Markdown.SyntaxTree
 
         private void SetNewCurrentAndAddTag(Match matchResult, bool nesting)
         {
-            //Очень дого пытался понять эту строчку :)
-            // Тут не очень понятный нейминг получился - общие названия, не дающие знания о сути (tags, Data)
-            // плюс хитрый механизм создания объектов.
-            // можно упростить, добавив конкретики в названия, а еще можно ПОДУМАТЬ над фабрикой, например.
-            var tag = tags[matchResult.Data]();
-            //TODO вынести проверку 
-            //все реализации метода тупо true возвращают
-            // я чего-то не понял или это не нужно?
+            var tag = tagsFactory.GetTagFromContent(matchResult.Content);
+            if (nesting && !tag.IsCorrectNesting(current.Value))
+            {
+                tag = new TagContent(matchResult.Content);
+                current.Value.Content.Add(tag);
+                return;
+            }
             if (!tag.IsCorrectSurroundingsForOpeningTag(matchResult.PrevSymbol, matchResult.NextSymbol))
-                tag = new TagContent(matchResult.Data);
+            {
+                current.AppendContent(new TagContent(matchResult.Content));
+                return;
+            }
+                
             if (nesting)
             {
-                //TODO и вооьще сделать эту фигню красивой
-                if (!tag.IsCorrectNesting(current.Value))
-                {
-                    tag = new TagContent(matchResult.Data);
-                    current.Value.Content.Add(tag);
-                }
-                else
-                {
-                    stack.Push(tag);
-                    current.Value.Content.Add(tag);
-                    current = current.Add(tag);
-                }
+                stack.Push(tag);
+                current.Value.Content.Add(tag);
+                current = current.AppendContent(tag);
             }
             else
             {
                 stack.Push(tag);
-                current = current.Add(tag);
+                current = current.AppendContent(tag);
             }
             
         }

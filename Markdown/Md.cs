@@ -11,7 +11,7 @@ namespace Markdown
     {
         private readonly Tokenizer tokenizer;
         private readonly HtmlRenderer html;
-        private readonly SyntaxTreeBuilder builder;
+        private readonly SyntaxTreeBuilder syntaxTree;
 
         public Md()
         {
@@ -22,8 +22,8 @@ namespace Markdown
             foreach (var tag in tags.Keys)
                 tokenizer.Add(tag);
             tokenizer.Build();
-
-            builder = new SyntaxTreeBuilder(tags);
+            var factory = new TagsFactory(tags);
+            syntaxTree = new SyntaxTreeBuilder(factory);
         }
 
         private Dictionary<string, Func<IToken>> GetAllTags()
@@ -35,22 +35,14 @@ namespace Markdown
 
         public string RenderToHtml(string markdown)
         {
+            syntaxTree.Clear();
             foreach (var line in markdown.Split('\n'))
             {
-                var newLine = true;
-                foreach (var matchResult in tokenizer.FindAll(line))
-                {
-                    builder.Append(matchResult);
-                    if (newLine)
-                    {
-                        builder.CloseNotPairedTags();
-                        newLine = false;
-                    }
-                }
+                foreach (var matchResult in tokenizer.GetAllTokens(line))
+                    syntaxTree.Append(matchResult);
+                syntaxTree.CloseNotPairedTags();
             }
-            //builder без методв Build :) Дерево вполне себе результат билда
-            //лушче не просто builderом его назвать, а чуть более конкретно
-            return html.Render(builder.Tree);
+            return html.Render(syntaxTree.GetTree());
         }
     }
 }

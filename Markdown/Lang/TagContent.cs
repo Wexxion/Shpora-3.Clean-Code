@@ -8,9 +8,10 @@ namespace Markdown.Lang
         public string HtmlTag { get; } = null;
         public bool HasClosingTag { get; } = false;
         public List<IToken> Content { get; set; } = null;
+        public bool IsClosed { get; set; } = true;
 
-        public readonly string Data;
-        public TagContent(string content) => Data = content;
+        public readonly string content;
+        public TagContent(string content) => this.content = content;
 
         public bool IsCorrectSurroundingsForOpeningTag(char? prevSymbol, char? nextSymbol)
             => true;

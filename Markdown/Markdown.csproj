@@ -56,8 +56,8 @@
     <Compile Include="Lang\TagContent.cs" />
     <Compile Include="Md.cs" />
     <Compile Include="SyntaxTree\SyntaxTreeBuilder.cs" />
-    <Compile Include="SyntaxTree\SyntaxTreeValidator.cs" />
     <Compile Include="SyntaxTree\Tree.cs" />
+    <Compile Include="TagsFactory.cs" />
     <Compile Include="Tests\Md_ShouldRender.cs" />
     <Compile Include="Parser\Match.cs" />
     <Compile Include="Parser\Mismatch.cs" />

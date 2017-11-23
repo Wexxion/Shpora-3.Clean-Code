@@ -2,7 +2,7 @@
 {
     public class Mismatch : IMatchResult
     { 
-        public string Data { get; }
-        public Mismatch(string data) => Data = data;
+        public string Content { get; }
+        public Mismatch(string data) => Content = data;
     }
 }

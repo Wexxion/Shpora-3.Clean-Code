@@ -2,11 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Markdown.Lang;
 
 namespace Markdown
 {
     public static class UsefulThings
     {
+        public static bool IsEscaped(this char? symbol) => '\\' == symbol;
+
+        public static string ConverToHtml(this IToken token)
+        {
+            if (token is TagContent dataToken)
+                return dataToken.content;
+            var content = string.Join("", token.Content.Select(x => x.ConverToHtml()));
+            if (token.IsClosed) 
+                return ConverToHtml(token.HtmlTag, content);
+            return token.MdTag + content;
+        }
         public static string ConverToHtml(string htmlTag, string content) 
             => $"<{htmlTag}>{content}</{htmlTag}>";
         public static bool IsCorrectIndex(this string str, int i) => i >= 0 && i < str.Length;

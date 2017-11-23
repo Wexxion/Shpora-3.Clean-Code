@@ -2,6 +2,6 @@
 {
     public interface IMatchResult
     {
-        string Data { get; }
+        string Content { get; }
     }
 }

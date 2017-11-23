@@ -29,9 +29,9 @@ namespace Markdown.Tests
         
         public IEnumerable<string> CorrectlyReturnTokens_OnSimpleTests(string md, int count)
         {
-            var res = tokenizer.FindAll(md).ToArray();
+            var res = tokenizer.GetAllTokens(md).ToArray();
             res.Should().HaveCount(count);
-            return res.Select(x => x.Data);
+            return res.Select(x => x.Content);
         }
     }
 }

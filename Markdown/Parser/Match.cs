@@ -2,13 +2,13 @@
 {
     public class Match : IMatchResult
     {
-        public string Data { get; }
+        public string Content { get; }
         public char? NextSymbol { get; }
         public char? PrevSymbol { get; }
 
-        public Match(string data, char? prevSymbol, char? nextSymbol)
+        public Match(string content, char? prevSymbol, char? nextSymbol)
         {
-            Data = data;
+            Content = content;
             PrevSymbol = prevSymbol;
             NextSymbol = nextSymbol;
         }
