@@ -55,7 +55,7 @@ namespace Markdown.SyntaxTree
                 if (matchResult is Match match)
                     SetNewCurrentAndAddTag(match, nesting: false);
                 else
-                    current.AppendContent(new TagContent(matchResult.Content));
+                    current.AppendContent(tagsFactory.Create(matchResult.Content));
             }
             else
             {
@@ -67,7 +67,7 @@ namespace Markdown.SyntaxTree
                         SetNewCurrentAndAddTag(match, nesting: true);
                 }
                 else
-                    current.Value.Content.Add(new TagContent(matchResult.Content));
+                    current.Value.Children.Add(tagsFactory.Create(matchResult.Content));
             }
         }
 
@@ -77,7 +77,7 @@ namespace Markdown.SyntaxTree
 
             if (!(tag.IsCorrectSurroundingsForClosingTag(matchResult.PrevSymbol, matchResult.NextSymbol)
                 && tag.IsCorrectNesting(current.Parent.Value)))
-                current.AppendContent(new TagContent(matchResult.Content));
+                current.AppendContent(tagsFactory.Create(matchResult.Content));
             else
             {
                 current.Value.IsClosed = true;
@@ -91,20 +91,20 @@ namespace Markdown.SyntaxTree
             var tag = tagsFactory.Create(matchResult.Content);
             if (nesting && !tag.IsCorrectNesting(current.Value))
             {
-                tag = new TagContent(matchResult.Content);
-                current.Value.Content.Add(tag);
+                tag = tagsFactory.Create(matchResult.Content);
+                current.Value.Children.Add(tag);
                 return;
             }
             if (!tag.IsCorrectSurroundingsForOpeningTag(matchResult.PrevSymbol, matchResult.NextSymbol))
             {
-                current.AppendContent(new TagContent(matchResult.Content));
+                current.AppendContent(tagsFactory.Create(matchResult.Content));
                 return;
             }
                 
             if (nesting)
             {
                 stack.Push(tag);
-                current.Value.Content.Add(tag);
+                current.Value.Children.Add(tag);
                 current = current.AppendContent(tag);
             }
             else

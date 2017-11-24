@@ -7,7 +7,8 @@ namespace Markdown.Lang
         string MdTag { get; }
         string HtmlTag { get; }
         bool HasClosingTag { get; }
-        List<IToken> Content { get; }
+        List<IToken> Children { get; }
+        string Content { get; }
         bool IsClosed { get; set; }
         bool IsCorrectSurroundingsForOpeningTag(char? prevSymbol, char? nextSymbol);
         bool IsCorrectSurroundingsForClosingTag(char? prevSymbol, char? nextSymbol);

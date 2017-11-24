@@ -26,9 +26,9 @@ namespace Markdown
 
         public static string ConverToHtml(this IToken token)
         {
-            if (token is TagContent dataToken)
-                return dataToken.content;
-            var content = string.Join("", token.Content.Select(x => x.ConverToHtml()));
+            if (token is EmptyTag)
+                return token.Content;
+            var content = string.Join("", token.Children.Select(x => x.ConverToHtml()));
             if (token.IsClosed)
                 return ConverToHtml(token.HtmlTag, content);
             return token.MdTag + content;
