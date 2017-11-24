@@ -73,7 +73,7 @@ namespace Markdown.SyntaxTree
 
         private void CloseCurrentTag(Match matchResult)
         {
-            var tag = tagsFactory.GetTagFromContent(matchResult.Content);
+            var tag = tagsFactory.Create(matchResult.Content);
 
             if (!(tag.IsCorrectSurroundingsForClosingTag(matchResult.PrevSymbol, matchResult.NextSymbol)
                 && tag.IsCorrectNesting(current.Parent.Value)))
@@ -88,7 +88,7 @@ namespace Markdown.SyntaxTree
 
         private void SetNewCurrentAndAddTag(Match matchResult, bool nesting)
         {
-            var tag = tagsFactory.GetTagFromContent(matchResult.Content);
+            var tag = tagsFactory.Create(matchResult.Content);
             if (nesting && !tag.IsCorrectNesting(current.Value))
             {
                 tag = new TagContent(matchResult.Content);

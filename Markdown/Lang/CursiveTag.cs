@@ -20,24 +20,14 @@ namespace Markdown.Lang
 
         public bool IsCorrectSurroundingsForOpeningTag(char? prevSymbol, char? nextSymbol)
         {
-            var prevIsIncorrect = false;
-            var nextIsIncorrect = false;
-            if (prevSymbol.HasValue)
-                prevIsIncorrect = prevSymbol.IsEscaped() || !char.IsWhiteSpace(prevSymbol.Value);
-            if (nextSymbol.HasValue)
-                nextIsIncorrect = char.IsWhiteSpace(nextSymbol.Value);
-            return !(prevIsIncorrect || nextIsIncorrect);
+            return UsefulThings.IsCorrectPrevSymbolForOpeningTag(prevSymbol)
+                   && UsefulThings.IsCorrectNextSymbolForOpeningTag(nextSymbol);
         }
 
         public bool IsCorrectSurroundingsForClosingTag(char? prevSymbol, char? nextSymbol)
         {
-            var prevIsIncorrect = false;
-            var nextIsIncorrect = false;
-            if (prevSymbol.HasValue)
-                prevIsIncorrect = prevSymbol.IsEscaped() || char.IsWhiteSpace(prevSymbol.Value);
-            if (nextSymbol.HasValue)
-                nextIsIncorrect = !char.IsWhiteSpace(nextSymbol.Value);
-            return !(prevIsIncorrect || nextIsIncorrect);
+            return UsefulThings.IsCorrectPrevSymbolForClosingTag(prevSymbol)
+                   && UsefulThings.IsCorrectNextSymbolForClosingTag(nextSymbol);
         }
 
         public bool IsCorrectNesting(IToken parent) => true;

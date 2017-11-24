@@ -11,6 +11,6 @@ namespace Markdown
         {
             this.tagCreator = tagCreator;
         }
-        public IToken GetTagFromContent(string content) => tagCreator[content].Invoke();
+        public IToken Create(string content) => tagCreator[content].Invoke();
     }
 }
