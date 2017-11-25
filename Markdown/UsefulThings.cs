@@ -24,16 +24,6 @@ namespace Markdown
 
         public static bool IsEscaped(this char? symbol) => '\\' == symbol;
 
-        public static string ConverToHtml(this IToken token)
-        {
-            if (token is EmptyTag)
-                return token.Content;
-            var content = string.Join("", token.Children.Select(x => x.ConverToHtml()));
-            if (token.IsClosed)
-                return ConverToHtml(token.HtmlTag, content);
-            return token.MdTag + content;
-        }
-
         public static string ConverToHtml(string htmlTag, string content) 
             => $"<{htmlTag}>{content}</{htmlTag}>";
 

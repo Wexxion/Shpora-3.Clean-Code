@@ -53,7 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SyntaxTree\HtmlRenderer.cs" />
-    <Compile Include="Lang\EmptyTag.cs" />
     <Compile Include="Md.cs" />
     <Compile Include="SyntaxTree\SyntaxTreeBuilder.cs" />
     <Compile Include="SyntaxTree\Tree.cs" />

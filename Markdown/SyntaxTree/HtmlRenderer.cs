@@ -8,13 +8,22 @@ namespace Markdown.SyntaxTree
 {
     class HtmlRenderer
     {
-        public string Render(Tree<IToken> syntaxTree)
+        public string Render(Tree<IToken, string> syntaxTree)
         {
             var sb = new StringBuilder();
-            var rootTokens = syntaxTree.Children.Select(x => x.Value).ToArray();
-            foreach (var rootToken in rootTokens)
-                sb.Append(rootToken.ConverToHtml());
+            foreach (var child in syntaxTree.Children)
+                sb.Append(RecursiveDFS(child));
             return sb.ToString();
+        }
+
+        private string RecursiveDFS(Tree<IToken, string> node)
+        {
+            if (node.IsLeaf)
+                return node.Content;
+            var tag = node.Value;
+            var tagContent = string.Join("", node.Children.Select(RecursiveDFS));
+            return tag.IsClosed ? UsefulThings.ConverToHtml(tag.HtmlTag, tagContent) 
+                : $"{tag.MdTag}{tagContent}";
         }
     }
 }

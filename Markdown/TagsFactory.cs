@@ -11,6 +11,6 @@ namespace Markdown
             => this.tagCreator = tagCreator;
 
         public IToken Create(string content) => tagCreator.ContainsKey(content) ?
-            tagCreator[content].Invoke() : new EmptyTag(content);
+            tagCreator[content].Invoke() : throw new KeyNotFoundException($"{content}");
     }
 }

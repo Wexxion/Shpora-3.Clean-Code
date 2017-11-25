@@ -8,7 +8,6 @@ namespace Markdown.Lang
         public string HtmlTag { get; }
         public bool HasClosingTag { get; }
         public List<IToken> Children { get; }
-        public string Content { get; set; }
         public bool IsClosed { get; set; }
 
         public CursiveTag()

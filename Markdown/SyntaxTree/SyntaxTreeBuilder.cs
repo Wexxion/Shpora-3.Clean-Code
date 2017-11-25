@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Markdown.Lang;
 using Markdown.Parser;
 
 namespace Markdown.SyntaxTree
 {
-    class SyntaxTreeBuilder
+    internal class SyntaxTreeBuilder
     {
         private readonly TagsFactory tagsFactory;
-        private Stack<IToken> stack;
-        private Tree<IToken> root;
 
-        private Tree<IToken> current;
+        private Tree<IToken, string> current;
+        private Tree<IToken, string> root;
+        private Stack<IToken> stack;
 
         public SyntaxTreeBuilder(TagsFactory factory)
         {
@@ -21,10 +19,11 @@ namespace Markdown.SyntaxTree
             Clear();
         }
 
-        public Tree<IToken> GetTree() => root;
+        public Tree<IToken, string> GetTree() => root;
+
         public void Clear()
         {
-            root = new Tree<IToken>();
+            root = new Tree<IToken, string>();
             stack = new Stack<IToken>();
             current = root;
         }
@@ -37,10 +36,11 @@ namespace Markdown.SyntaxTree
             foreach (var token in toRemove)
             {
                 stackList.Remove(token);
+                token.IsClosed = true;
                 if (current.Value == token)
                     current = current.Parent;
             }
-                
+
             stack.Clear();
             stackList.Reverse();
 
@@ -53,21 +53,19 @@ namespace Markdown.SyntaxTree
             if (stack.Count == 0)
             {
                 if (matchResult is Match match)
-                    SetNewCurrentAndAddTag(match, nesting: false);
+                    SetNewCurrentAndAddTag(match, false);
                 else
-                    current.AppendContent(tagsFactory.Create(matchResult.Content));
+                    current.AddContent(matchResult.Content);
             }
             else
             {
                 if (matchResult is Match match)
-                {   
                     if (stack.Peek().MdTag == matchResult.Content)
                         CloseCurrentTag(match);
                     else
-                        SetNewCurrentAndAddTag(match, nesting: true);
-                }
+                        SetNewCurrentAndAddTag(match, true);
                 else
-                    current.Value.Children.Add(tagsFactory.Create(matchResult.Content));
+                    current.AddContent(matchResult.Content);
             }
         }
 
@@ -76,8 +74,10 @@ namespace Markdown.SyntaxTree
             var tag = tagsFactory.Create(matchResult.Content);
 
             if (!(tag.IsCorrectSurroundingsForClosingTag(matchResult.PrevSymbol, matchResult.NextSymbol)
-                && tag.IsCorrectNesting(current.Parent.Value)))
-                current.AppendContent(tagsFactory.Create(matchResult.Content));
+                  && tag.IsCorrectNesting(current.Parent.Value)))
+            {
+                current.AddContent(matchResult.Content);
+            }
             else
             {
                 current.Value.IsClosed = true;
@@ -91,28 +91,26 @@ namespace Markdown.SyntaxTree
             var tag = tagsFactory.Create(matchResult.Content);
             if (nesting && !tag.IsCorrectNesting(current.Value))
             {
-                tag = tagsFactory.Create(matchResult.Content);
-                current.Value.Children.Add(tag);
+                current.AddContent(matchResult.Content);
                 return;
             }
             if (!tag.IsCorrectSurroundingsForOpeningTag(matchResult.PrevSymbol, matchResult.NextSymbol))
             {
-                current.AppendContent(tagsFactory.Create(matchResult.Content));
+                current.AddContent(matchResult.Content);
                 return;
             }
-                
+
             if (nesting)
             {
                 stack.Push(tag);
                 current.Value.Children.Add(tag);
-                current = current.AppendContent(tag);
+                current = current.AddChild(tag);
             }
             else
             {
                 stack.Push(tag);
-                current = current.AppendContent(tag);
+                current = current.AddChild(tag);
             }
-            
         }
     }
 }

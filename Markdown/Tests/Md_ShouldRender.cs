@@ -46,7 +46,7 @@ namespace Markdown.Tests
         [TestCase("__a _b c", ExpectedResult = "__a _b c", TestName = "not paired")]
         [TestCase("a_ c_ b", ExpectedResult = "a_ c_ b", TestName = "2 close not paired")]
         [TestCase("_a __b c", ExpectedResult = "_a __b c", TestName = "2 open not paired")]
-        [TestCase("_a _a c d_ e", ExpectedResult = "<em>a a c d</em> e", TestName = "2 open 1 close")]
+        [TestCase("_a _a c d_ e", ExpectedResult = "<em>a _a c d</em> e", TestName = "2 open 1 close")]
         [TestCase("_a __b d_ c", ExpectedResult = "<em>a __b d</em> c", TestName = "hard test")]
         [TestCase("_a __b __c d_ c", ExpectedResult = "<em>a __b __c d</em> c", TestName = "hard test v2")]
         public string CorrectlyParsPairedTagsWithoutEnd(string str)
